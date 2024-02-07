@@ -160,6 +160,7 @@ export class ControlComponent  implements OnInit {
     this.rightControlActive = !this.rightControlActive;
     if(this.rightControlActive){
       this.arduinoService.activateRightValve();
+      this.arduinoService.conteoPressure();
     }else{
       this.arduinoService.deactivateRightValve();
     }
@@ -170,6 +171,7 @@ export class ControlComponent  implements OnInit {
     this.leftControlActive = !this.leftControlActive;
     if(this.leftControlActive){
       this.arduinoService.activateLeftValve();
+      this.arduinoService.conteoPressure();
     }else{
       this.arduinoService.deactivateLeftValve();
     }
