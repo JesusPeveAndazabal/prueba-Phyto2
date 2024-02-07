@@ -164,6 +164,7 @@ export class MainComponent implements OnInit,AfterViewInit{
     console.log(this.lastWorkExecution, "dio click al boton verde");
     // console.log(this.loadPersonValues, "person values");
     if(!this.lastWorkExecution)
+      this.arduinoService.conteoPressure();
       this.loadPersonValues();
     let command : SocketData = {
       event:SocketEvent.WORK_STATUS_CHANGES,
