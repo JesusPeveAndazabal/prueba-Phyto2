@@ -61,9 +61,9 @@ export class ArduinoService {
   izquierdaActivada = false;
   derechaActivada = false;
 
-  arduino1! : ArduinoDevice;
+ /*  arduino1! : ArduinoDevice;
   arduino2! : ArduinoDevice;
-  arduino3! : ArduinoDevice;
+  arduino3! : ArduinoDevice; */
   
 
   isRunning: boolean = false;
@@ -86,18 +86,18 @@ export class ArduinoService {
 
     this.setupSensorSubjects();
 
-    this.arduino1 = new ArduinoDevice("/dev/ttyUSB0",115200,true,electronService,this); //CAUDAL-VOLUMEN
-    this.arduino2 = new ArduinoDevice("/dev/ttyUSB1",115200,true,electronService,this);  //VALVULAS - PRESION
-    this.arduino3 = new ArduinoDevice("/dev/ttyUSB2",115200,true,electronService,this);  //GPS - VELOCIDAD
+    //this.arduino1 = new ArduinoDevice("COM4",115200,true,electronService,this); //CAUDAL-VOLUMEN
+    //this.arduino2 = new ArduinoDevice("/dev/ttyUSB1",115200,true,electronService,this);  //VALVULAS - PRESION
+    //this.arduino3 = new ArduinoDevice("/dev/ttyUSB2",115200,true,electronService,this);  //GPS - VELOCIDAD
     
-/*     for(let i = 1; i <= Configuration.nDevices; i++){
+    for(let i = 1; i <= Configuration.nDevices; i++){
       this.listArduinos.push(
         new ArduinoDevice(Configuration[`device${i}`],115200,true,electronService,this)
       );
-    } */
+    }
 
     
-  /*   setInterval(()=>{
+    setInterval(()=>{
       let onExecution = false;
       if(!onExecution){
         onExecution = true;
@@ -155,12 +155,12 @@ export class ArduinoService {
       iteration();  
       }
     },1000);
- */
+
   }
 
-/*   findBySensor(sensor : number): ArduinoDevice{
+  findBySensor(sensor : number): ArduinoDevice{
     return this.listArduinos.find(p => p.sensors.some(x => x == sensor))!;
-  } */
+  }
 
   inicializarContenedor(inicial: number, minimo: number): void {
     this.initialVolume = inicial;
@@ -184,63 +184,60 @@ export class ArduinoService {
       // Convertir el valor de bares según sea necesario, por ejemplo, asumamos que está en la misma unidad que se usó en el script original
       const barPressure = bars;
 
-      //console.log('Enviando comando de regulación de presión...', barPressure);
-
-      // Aquí deberías incluir la lógica para enviar el comando al dispositivo, por ejemplo:
-      this.arduino2.sendCommand(`${regulatorId}|${barPressure.toFixed(1)}`);
+      //this.arduino2.sendCommand(`${regulatorId}|${barPressure.toFixed(1)}`);
+      this.findBySensor(Sensor.PRESSURE).sendCommand(`${regulatorId}|${barPressure.toFixed(1)}`);
     }
 
     //Metodo para resetear el volumen inicial y minimo
     public resetVolumenInit(): void {
       const command = 'B';
-      this.arduino1.sendCommand(command);
-      //const command = 'B';
-      
+      //this.arduino1.sendCommand(command); 
+      this.findBySensor(Sensor.WATER_FLOW).sendCommand(command);
       //this.arduino1 = (Sensor.VOLUME).sendCommand(command);
     }
 
     //Metodo para resetear la pression inicial y minimo
     public resetPressure(): void {
       const command = 'B';
-      //this.findBySensor(Sensor.PRESSURE).sendCommand(command);
-      this.arduino1.sendCommand(command);
+      this.findBySensor(Sensor.PRESSURE).sendCommand(command);
+      //this.arduino1.sendCommand(command);
     }
 
     //
     public conteoPressure(): void {
       const command = 'E';
-      this.arduino2.sendCommand(command);
-      //this.findBySensor(Sensor.PRESSURE).sendCommand(command);
+      //this.arduino2.sendCommand(command);
+      this.findBySensor(Sensor.PRESSURE).sendCommand(command);
     }
 
     // Método para activar la válvula izquierda
     public activateLeftValve(): void {
       const command = Sensor.VALVE_LEFT + '|1\n'; // Comando para activar la válvula izquierda
-      this.arduino2.sendCommand(command);
-      //this.findBySensor(Sensor.VALVE_LEFT).sendCommand(command);
+      //this.arduino2.sendCommand(command);
+      this.findBySensor(Sensor.VALVE_LEFT).sendCommand(command);
     }
 
     // Método para desactivar la válvula izquierda
     public deactivateLeftValve(): void {
       const command = Sensor.VALVE_LEFT  + '|0\n'; // Comando para desactivar la válvula izquierda
-      this.arduino2.sendCommand(command);
-      //this.findBySensor(Sensor.VALVE_LEFT).sendCommand(command);
+      //this.arduino2.sendCommand(command);
+      this.findBySensor(Sensor.VALVE_LEFT).sendCommand(command);
       //console.log("Comando desactivar valvula izquierda", command);
     }
 
     // Método para activar la válvula derecha
     public activateRightValve(): void {
       const command = Sensor.VALVE_RIGHT + '|1\n'; // Comando para activar la válvula derecha
-      console.log(command, "comand");
-      this.arduino2.sendCommand(command);
-      //this.findBySensor(Sensor.VALVE_RIGHT).sendCommand(command);
+      //console.log(command, "comand");
+      //this.arduino2.sendCommand(command);
+      this.findBySensor(Sensor.VALVE_RIGHT).sendCommand(command);
     }
 
     // Método para desactivar la válvula derecha
     public deactivateRightValve(): void {
       const command = Sensor.VALVE_RIGHT + '|0\n'; // Comando para desactivar la válvula derecha
-      this.arduino2.sendCommand(command);
-      //this.findBySensor(Sensor.VALVE_RIGHT).sendCommand(command);
+      //this.arduino2.sendCommand(command);
+      this.findBySensor(Sensor.VALVE_RIGHT).sendCommand(command);
       //console.log("Comando desactivar valvula derecha", command);
     }
 
