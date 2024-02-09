@@ -8,7 +8,7 @@ import { WorkExecution } from './../../core/models/work-execution';
 import { Component, Injectable, NgZone, OnInit } from '@angular/core';
 // import { environment } from 'src/environments/environment';
 import { Sensor, SocketEvent, UnitPressureEnum, WorkStatusChange, convertPressureUnit,config } from './../../core/utils/global';
-import { interval, startWith, switchMap } from 'rxjs';
+import { combineLatest, interval, map, startWith, switchMap } from 'rxjs';
 import Swal from 'sweetalert2';
 @Injectable({
   providedIn: "root"
@@ -45,6 +45,7 @@ export class ControlComponent  implements OnInit {
   public presionError: boolean = false;
   maximoCaudal : number = 0;
   minimoCaudal : number = 0;
+  caudalNominal: number = 0;
   maximoPresion: number = 0;
   minimoPresion: number = 0;
   constructor(private dbService : DatabaseService, private arduinoService :ArduinoService, private zone: NgZone) {
@@ -58,60 +59,75 @@ export class ControlComponent  implements OnInit {
     this.minVolume = this.localConfig.vol_alert_on;
     this.info = JSON.parse((await this.dbService.getLastWorkExecution()).configuration).pressure;
     console.log(this.info, "teoric_pressure");
+    this.caudalNominal = JSON.parse((await this.dbService.getLastWorkExecution()).configuration).water_flow;
+    console.log(this.caudalNominal, "caudal nominal");
     //CAUDAL
     // Combina el observable del intervalo con tu observable de sensor
     intervalObservable.pipe(
       startWith(0), // Emite un valor inicial para que comience inmediatamente
       switchMap(() => this.arduinoService.getSensorObservable(Sensor.WATER_FLOW))
     ).subscribe((valorDelSensor:number) => {
-      console.log("initialVolume", this.arduinoService.initialVolume);
       this.waterFlow = valorDelSensor;
+      console.log(this.waterFlow, "valor del sensor");
       this.maxVolume = this.arduinoService.initialVolume;
-      //Configuracion
       config.maxVolume = this.arduinoService.initialVolume;
-      this.maximoCaudal = this.localConfig.max_wflow;
-      this.minimoCaudal = this.localConfig.min_wflow;
-      // this.volume = this.arduinoService.currentRealVolume;
-      console.log(this.minimoCaudal, "minVolume");
-      console.log(this.waterFlow, "waterFlow");
-      console.log(this.maximoCaudal, "maxVolume");
-      if (this.waterFlow < this.minimoCaudal * 0.5 || this.waterFlow > this.maximoCaudal * 1.5) {
-        this.emergencia = true;
-        this.caudalError = true;
-      } else if(this.waterFlow > this.minimoCaudal && this.waterFlow < this.maximoCaudal) {
-        this.caudalError = false;
-        this.emergencia = false;
+      if(this.arduinoService.isRunning){
+        if (this.waterFlow < this.caudalNominal * 0.5 || this.waterFlow > this.caudalNominal * 1.5) {
+          // this.emergencia = true;
+          this.caudalError = true;
+        } else if(this.waterFlow > this.caudalNominal * 0.9 && this.waterFlow < this.caudalNominal * 1.1) {
+          this.caudalError = false;
+          // this.emergencia = false;
+        }else {
+          this.caudalError = true;
+          // this.emergencia = false;
+        }
       }else{
-        this.caudalError = true;
-        this.emergencia = false;
+        this.caudalError = false;
       }
+
     });
 
 
-
+    // PRESSURE
     intervalObservable.pipe(
       startWith(0), // Emite un valor inicial para que comience inmediatamente
       switchMap(() => this.arduinoService.getSensorObservable(Sensor.PRESSURE))
     ).subscribe((valorDelSensor:number) => {
       this.pressure = valorDelSensor;
-      // this.volume = this.arduinoService.currentRealVolume;
-      this.minimoPresion = this.localConfig.min_pressure;
-      this.maximoPresion= this.localConfig.max_pressure;
-      console.log(this.minimoPresion, "minPressure: ");
-      console.log(this.pressure, "presure");
-      console.log(this.maximoPresion, "maxPressure");
-      if (this.pressure < this.minimoPresion * 0.5 || this.pressure > this.maximoPresion * 1.5) {
-        this.emergencia = true;
-        this.presionError = true;
-        // prender todas las luces
-      } else if(this.pressure > this.minimoPresion && this.pressure < this.maximoPresion) {
-        this.presionError = false;
-        this.emergencia = false;
+      if(this.arduinoService.isRunning){
+        if (this.pressure < this.info * 0.5 || this.pressure > this.info * 1.5) {
+          // this.emergencia = true;
+          this.presionError = true;
+        } else if(this.pressure > this.info * 0.9 && this.pressure < this.info * 1.1 ) {
+          this.presionError = false;
+          // this.emergencia = false;
+        }else {
+          this.presionError = true;
+          // this.emergencia = false;
+        }
       }else{
-        this.presionError = true;
+        this.presionError = false;
+      }
+    });
+
+    // Combinar los estados de emergencia
+    combineLatest([
+      intervalObservable.pipe(map(() => this.pressure)),
+      intervalObservable.pipe(map(() => this.waterFlow))
+    ]).subscribe(([emergencia]) => {
+      console.log(this.waterFlow, "emergencias presion");
+      if(this.arduinoService.isRunning){
+        if(this.pressure < this.info * 0.5 || this.pressure > this.info * 1.5 || this.waterFlow < this.caudalNominal * 0.5 || this.waterFlow > this.caudalNominal * 1.5){
+          this.emergencia = true;
+        }else{
+          this.emergencia = false;
+        }
+      }else{
         this.emergencia = false;
       }
     });
+
     //VOLUMEN
     // Observable que emite cada segundo
 
@@ -160,7 +176,6 @@ export class ControlComponent  implements OnInit {
     this.rightControlActive = !this.rightControlActive;
     if(this.rightControlActive){
       this.arduinoService.activateRightValve();
-      this.arduinoService.conteoPressure();
     }else{
       this.arduinoService.deactivateRightValve();
     }
@@ -171,7 +186,6 @@ export class ControlComponent  implements OnInit {
     this.leftControlActive = !this.leftControlActive;
     if(this.leftControlActive){
       this.arduinoService.activateLeftValve();
-      this.arduinoService.conteoPressure();
     }else{
       this.arduinoService.deactivateLeftValve();
     }

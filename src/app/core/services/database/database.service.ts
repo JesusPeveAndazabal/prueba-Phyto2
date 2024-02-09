@@ -1206,6 +1206,7 @@ export class DatabaseService extends ElectronService {
           reject(err);
         } else {
           resolve(row);
+          resolve(row(2))
         }
       });
 
