@@ -60,7 +60,7 @@ export class VolumeComponent  implements OnInit,OnChanges {
       switchMap(() => this.arduinoService.getSensorObservable(Sensor.VOLUME))
     ).subscribe((valorDelSensor:number) => {
       this.volume = this.arduinoService.currentRealVolume - valorDelSensor;
-      console.log(this.volume, "volumen que me está pasando");
+      // console.log(this.volume, "volumen que me está pasando");
 
       if (this.volume < this.minVolume && this.arduinoService.isRunning || this.volume < this.minVolume && !this.arduinoService.isRunning) {
         this.shouldBlink = true;

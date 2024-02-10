@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonSelect, ModalController } from '@ionic/angular';
 import { Cultivation, Farm, Lot, Product, Work,WorkExecution } from './../../../core/models/models';
 import * as moment from 'moment';
+import { config } from '../../../core/utils/global';
 
 @Component({
   selector: 'app-application-data',
@@ -111,6 +112,7 @@ export class ApplicationDataComponent  implements OnInit {
       if(!this.currentWorkExecution){
         await this.dbService.saveWorkExecutionData(wExecution)
         .then(async()=>{
+          config.lastWorkExecution = wExecution;
           return this.modalCtrl.dismiss(null, 'confirm','application-data-modal');
 
         })
@@ -118,10 +120,12 @@ export class ApplicationDataComponent  implements OnInit {
           console.log(error);
           return false;
         });
+        
       }
       else{
         await this.dbService.updateWorkExecutionData(wExecution)
         .then(()=>{
+          config.lastWorkExecution = wExecution;
           return this.modalCtrl.dismiss(null, 'confirm','application-data-modal');
 
         })

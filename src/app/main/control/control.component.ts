@@ -58,9 +58,9 @@ export class ControlComponent  implements OnInit {
     this.localConfig = await this.dbService.getLocalConfig();
     this.minVolume = this.localConfig.vol_alert_on;
     this.info = JSON.parse((await this.dbService.getLastWorkExecution()).configuration).pressure;
-    console.log(this.info, "teoric_pressure");
+    // console.log(this.info, "teoric_pressure");
     this.caudalNominal = JSON.parse((await this.dbService.getLastWorkExecution()).configuration).water_flow;
-    console.log(this.caudalNominal, "caudal nominal");
+    // console.log(this.caudalNominal, "caudal nominal");
     //CAUDAL
     // Combina el observable del intervalo con tu observable de sensor
     intervalObservable.pipe(
@@ -68,7 +68,7 @@ export class ControlComponent  implements OnInit {
       switchMap(() => this.arduinoService.getSensorObservable(Sensor.WATER_FLOW))
     ).subscribe((valorDelSensor:number) => {
       this.waterFlow = valorDelSensor;
-      console.log(this.waterFlow, "valor del sensor");
+      // console.log(this.waterFlow, "valor del sensor");
       this.maxVolume = this.arduinoService.initialVolume;
       config.maxVolume = this.arduinoService.initialVolume;
       if(this.arduinoService.isRunning){
@@ -116,7 +116,7 @@ export class ControlComponent  implements OnInit {
       intervalObservable.pipe(map(() => this.pressure)),
       intervalObservable.pipe(map(() => this.waterFlow))
     ]).subscribe(([emergencia]) => {
-      console.log(this.waterFlow, "emergencias presion");
+      // console.log(this.waterFlow, "emergencias presion");
       if(this.arduinoService.isRunning){
         if(this.pressure < this.info * 0.5 || this.pressure > this.info * 1.5 || this.waterFlow < this.caudalNominal * 0.5 || this.waterFlow > this.caudalNominal * 1.5){
           this.emergencia = true;
@@ -137,7 +137,7 @@ export class ControlComponent  implements OnInit {
       switchMap(() => this.arduinoService.getSensorObservable(Sensor.VOLUME))
     ).subscribe((valorDelSensor:number) => {
       this.volume = this.arduinoService.currentRealVolume - valorDelSensor;
-      console.log(this.volume, "volumen que me está pasando");
+      // console.log(this.volume, "volumen que me está pasando");
 
       if (this.volume < this.minVolume && this.arduinoService.isRunning || this.volume < this.minVolume && !this.arduinoService.isRunning) {
         this.shouldBlink = true;
@@ -165,8 +165,8 @@ export class ControlComponent  implements OnInit {
     this.arduinoService.getSensorObservable(Sensor.GPS).subscribe((valorDelSensor : number[]) => {
       this.latitud=valorDelSensor[0];
       this.longitud=valorDelSensor[1];
-      console.log("SENSOR DE GPS",valorDelSensor[1]);
-      config.gps.push(valorDelSensor[0], valorDelSensor[1]);
+      // console.log("SENSOR DE GPS",valorDelSensor);
+      config.gps.push(valorDelSensor);
       // LONGITUD/LATITUD
     });
   }

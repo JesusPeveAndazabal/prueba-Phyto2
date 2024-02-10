@@ -133,7 +133,7 @@ export class ArduinoDevice {
 
         this.arduinoService.notifySensorValue(sensorType, numericValue);
       });
-      console.log('Received message from Arduino:', this.message_from_device);
+      // console.log('Received message from Arduino:', this.message_from_device);
     });
   }
 
@@ -141,9 +141,9 @@ export class ArduinoDevice {
     if (this.port && this.port.writable) {
       this.port.write(`${command}\n`, 'utf-8', (error : any) => {
         if (error) {
-          console.error('Error writing to Arduino:', error);
+          // console.error('Error writing to Arduino:', error);
         } else {
-          console.log('Command sent to Arduino:', command);
+          // console.log('Command sent to Arduino:', command);
         }
       });
     }

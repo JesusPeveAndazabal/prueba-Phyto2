@@ -1,7 +1,7 @@
 import { Login } from './../core/models/login';
 // import { WebSocketClientService } from './../core/services/websocket-client/web-socket-client.service';
 import { DatabaseService} from './../core/services/database/database.service';
-import { WaterVolumes, WorkExecution } from './../core/models/work-execution';
+import { WaterVolumes, WorkExecution, WorkExecutionDetail } from './../core/models/work-execution';
 import { SocketData, WorkExecutionConfiguration } from './../core/models/models';
 import { Sensor, SocketEvent, WorkDataChange, WorkStatusChange, config} from './../core/utils/global';
 import { Person } from './../core/models/person';
@@ -66,10 +66,17 @@ export class MainComponent implements OnInit,AfterViewInit{
 
     this.login = await this.databaseService.getLogin();
     this.lastWorkExecution = await this.databaseService.getLastWorkExecution();
+    config.lastWorkExecution = this.lastWorkExecution;
     this.localConfig = await this.databaseService.getLocalConfig();
 
+    //Obtener las coordenadas del trabajo lastWorkExecution JSON.parse()
+    let details = await this.databaseService.getWorkExecutionDetailReal(this.lastWorkExecution.id);
+    details.forEach((wDetail : WorkExecutionDetail) => {
+      config.gps.push(JSON.parse(wDetail.gps));
+    });
+
     this.arduinoService.getSensorObservable(Sensor.VOLUME).subscribe((valorDelSensor) => {
-      console.log(this.localConfig);
+      // console.log(this.localConfig);
       if (this.arduinoService.currentRealVolume < this.localConfig.vol_alert_on){
         this.workStatus = WorkStatusChange.STOP;
         this.classButtonPower = "power-button-off";
@@ -282,8 +289,8 @@ export class MainComponent implements OnInit,AfterViewInit{
   }
 
   get canStart(): boolean{
-    if(this.lastWorkExecution){
-      return this.lastWorkExecution.configuration != "";
+    if(config.lastWorkExecution){
+      return config.lastWorkExecution.configuration != "";
     }
     return false;
   }

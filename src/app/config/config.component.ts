@@ -34,7 +34,7 @@ export class ConfigComponent implements OnInit {
 
     this.formData = this.fb.group({
       // ws_server: ['',[Validators.required,Validators.pattern('(?:(?:(?:ht|f)tp)s?://)|(ws?s)?[\\w_-]+(?:\\.[\\w_-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?')]],
-      api_server: ['',[Validators.required,Validators.pattern('(?:(?:(?:ht|f)tp)s?://)|(ws?s)?[\\w_-]+(?:\\.[\\w_-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?')]],
+      // api_server: ['',[Validators.required,Validators.pattern('(?:(?:(?:ht|f)tp)s?://)|(ws?s)?[\\w_-]+(?:\\.[\\w_-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?')]],
       vol_alert_on: [0,[Validators.required,Validators.min(1)]],
       min_wflow: [0,[Validators.required,Validators.min(1)]],
       max_wflow: [0,[Validators.required,Validators.min(1)]],
@@ -54,7 +54,7 @@ export class ConfigComponent implements OnInit {
     //console.log(config);
     if (config){
       this.formData.setValue({
-        api_server : config.api_server,
+        // api_server : config.api_server,
         vol_alert_on : config.vol_alert_on,
         min_wflow : config.min_wflow,
         max_wflow : config.max_wflow,
@@ -67,20 +67,20 @@ export class ConfigComponent implements OnInit {
   }
 
   async save(){
-    console.log("el botón 'Validar y Guardar' fue presionado",this.formData, "config.component.ts 1");
+    // console.log("el botón 'Validar y Guardar' fue presionado",this.formData, "config.component.ts 1");
     // alert("info correcta");
     if(this.formData.valid){
-      environment.apiURL = this.formData.value.api_server;
+      // environment.apiURL = this.formData.value.api_server;
       environment.minVolume = this.formData.value.vol_alert_on;
 
       // VALIDACION DE API
       let validAPI = await this.syncPrimaryTables();
       console.log(validAPI, "validacion de api");
-      if(!validAPI){
-        this.alerta.mostrarAlertaChica("<p>No se pudo validar URL del servidor API.</p>");
-        // alert("");
-        return;
-      }
+      // if(!validAPI){
+      //   this.alerta.mostrarAlertaChica("<p>No se pudo validar URL del servidor API.</p>");
+      //   // alert("");
+      //   return;
+      // }
 
       this.loading_message = "Guardando parámetros...";
 

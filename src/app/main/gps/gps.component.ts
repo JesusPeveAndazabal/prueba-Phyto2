@@ -34,7 +34,7 @@ export class GpsComponent  implements OnInit,AfterViewInit,OnChanges {
     this.loader.importLibrary('maps').then(() => {
       // Crea un nuevo objeto Map y lo asocia con el elemento HTML
       this.map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
-        center: { lat: -14.217268879, lng: -75.695326529 },
+        center: { lat: -14.1364703, lng: -75.4210237 },
         zoom: 17.5,
         mapTypeId: "satellite",
         mapTypeControl: false,
@@ -54,14 +54,14 @@ export class GpsComponent  implements OnInit,AfterViewInit,OnChanges {
   loadMarkers(){
     if(config.gps.length > 1){
       if(!this.wasCentered && this.map){
-        this.map.setCenter({ lat: config.gps[0][1], lng: config.gps[0][0] });
+        this.map.setCenter({ lat: config.gps[0][0], lng: config.gps[0][1] });
         this.wasCentered = true;
       }
 
       let pathLines = [];
 
       for(let i = 0; i< config.gps.length; i++){
-        pathLines.push({ lat: config.gps[i][1], lng: config.gps[i][0] });
+        pathLines.push({ lat: config.gps[i][0], lng: config.gps[i][1] });
       }
 
       let line = new google.maps.Polyline({

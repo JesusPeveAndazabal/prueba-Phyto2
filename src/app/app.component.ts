@@ -56,6 +56,21 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log("App initialization", "app.component.ts");
+    // console.log("App initialization", "app.component.ts");
+    let onExecution = false; //Variable de control que evita envíos duplicados y sobre carga del tráfico.
+
+    setInterval(()=>{
+      if(!onExecution){
+        onExecution = true;
+
+        //Loop que envía los registros por guardar en el servidor vía API/REST
+        const iteration = async () =>{
+         
+        };
+
+      iteration();
+
+      }
+    },250);
   }
 }

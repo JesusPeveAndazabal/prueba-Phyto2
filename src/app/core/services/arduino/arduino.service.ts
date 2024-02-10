@@ -95,7 +95,7 @@ export class ArduinoService {
     }
 
     
-  /*   setInterval(()=>{
+     setInterval(()=>{
       let onExecution = false;
       if(!onExecution){
         onExecution = true;
@@ -109,11 +109,14 @@ export class ArduinoService {
 
             this.listArduinos.forEach( arduino => {
               data = {...data,...this.mapToObject(arduino.message_from_device)};
-              console.log("data" , data);
             });
             
             let gps = data[`${Sensor.GPS}`];
+            
             delete data[`${Sensor.GPS}`];
+            delete data[`${Sensor.VALVE_LEFT}`]; //Eliminar valvula izquierda
+            delete data[`${Sensor.VALVE_RIGHT}`]; //Eliminar valvula derecha 
+            delete data[`${Sensor.PRESSURE_REGULATOR}`]; //Eliminar regulador de presion
 
 
             //Evaluar los eventos
@@ -142,8 +145,6 @@ export class ArduinoService {
               id                : 0,
             }; 
             
-            console.log("WorkExecutionDetail", wExecutionDetail);
-
             //Guardar en la db
             this.databaseService.saveWorkExecutionDataDetail(wExecutionDetail);
 
@@ -152,7 +153,7 @@ export class ArduinoService {
         }
       iteration();  
       }
-    },1000); */
+     },1000); 
 
   }
 
@@ -220,13 +221,11 @@ export class ArduinoService {
       const command = Sensor.VALVE_LEFT  + '|0\n'; // Comando para desactivar la válvula izquierda
       //this.arduino2.sendCommand(command);
       this.findBySensor(Sensor.VALVE_LEFT).sendCommand(command);
-      //console.log("Comando desactivar valvula izquierda", command);
     }
 
     // Método para activar la válvula derecha
     public activateRightValve(): void {
       const command = Sensor.VALVE_RIGHT + '|1\n'; // Comando para activar la válvula derecha
-      //console.log(command, "comand");
       //this.arduino2.sendCommand(command);
       this.findBySensor(Sensor.VALVE_RIGHT).sendCommand(command);
     }
@@ -236,7 +235,6 @@ export class ArduinoService {
       const command = Sensor.VALVE_RIGHT + '|0\n'; // Comando para desactivar la válvula derecha
       //this.arduino2.sendCommand(command);
       this.findBySensor(Sensor.VALVE_RIGHT).sendCommand(command);
-      //console.log("Comando desactivar valvula derecha", command);
     }
 
     //Fucnion para abrir y cerrar electrovalvulas
@@ -265,7 +263,6 @@ export class ArduinoService {
     //Regular la presion
     regulatePressure(): void {
       if (this.inputPressureValue !== undefined) {
-        console.log(this.inputPressureValue);
       this.regulatePressureWithBars(this.inputPressureValue);
       }
     }
@@ -279,14 +276,11 @@ export class ArduinoService {
 
 
     IniciarApp(valorWatterflow : number): void {
-      console.log("Ingreso a la funcion iniciarApp")
       if (this.isRunning && valorWatterflow > 0) {
-        console.log("Ingreso a la condicion si es true la varibale isRunning")
         this.resumeTimerProductive();
         this.pauseTimerImproductive();
-        console.log("valor del caudal", valorWatterflow);
       } else if(valorWatterflow <= 0){
-        console.log("Ingreso al else if si es false la variable y esta menos dee 0")
+  6
         //this.isRunning = false;
         this.resumeTimerImproductive();
         this.pauseTimerProductive();
@@ -315,7 +309,6 @@ export class ArduinoService {
 
     //Fucnion para tiempo productivo
     startTimerProductive(): void {
-      console.log("Ingreso a la funcion de star time productive");
       this.timerProductive = setInterval(() => {
         this.currentTimeProductive++;
       }, 1000);
@@ -336,7 +329,6 @@ export class ArduinoService {
       const formattedHours = hours < 10 ? `0${hours}` : hours;
       const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
       const formattedSeconds = remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds;
-      console.log("Formato de formatTime" , `${formattedHours}:${formattedMinutes}:${formattedSeconds}`);
       return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
 
     }

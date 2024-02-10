@@ -4,7 +4,7 @@ import { Component, Injectable, OnInit } from '@angular/core';
 import { ItemReorderEventDetail, ModalController } from '@ionic/angular';
 import { NozzlesConfiguration, WorkExecutionConfiguration,NozzleColor, NozzleType, Nozzles, WorkExecution } from './../../../core/models/models';
 import { AlertController } from '@ionic/angular';
-import { UnitPressure, UnitPressureEnum,convertPressureUnit } from './../../../core/utils/global';
+import { UnitPressure, UnitPressureEnum,config,convertPressureUnit } from './../../../core/utils/global';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import Swal from 'sweetalert2';
@@ -160,6 +160,7 @@ export class ApplicationValuesComponent  implements OnInit {
       if(!this.currentWorkExecution){
         await this.dbService.saveWorkExecutionData(wExecution)
         .then(async ()=>{
+          config.lastWorkExecution = wExecution;
           return this.modalCtrl.dismiss(null, 'confirm','application-values-modal');
 
         })
@@ -167,10 +168,12 @@ export class ApplicationValuesComponent  implements OnInit {
           console.log(error);
           return false;
         });
+        
       }
       else{
         await this.dbService.updateWorkExecutionData(wExecution)
         .then(async()=>{
+          config.lastWorkExecution = wExecution;
           return this.modalCtrl.dismiss(null, 'confirm','application-values-modal');
 
         })

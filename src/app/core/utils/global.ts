@@ -1,6 +1,7 @@
 export const config = {
   maxVolume: 0,
-  gps : new Array<any>()
+  gps : new Array<any>(),
+  lastWorkExecution : null
 }
 
 export enum PersonType{

@@ -20,7 +20,7 @@ export class PermissionsService {
 
   async canActivate() {
     const isValidResult = await this.isValid();
-    console.log(isValidResult, "el guardian pasa el main");
+    // console.log(isValidResult, "el guardian pasa el main");
     return isValidResult;
   }
 
@@ -30,8 +30,8 @@ export class PermissionsService {
 
     let login = await this.databaseService.getLogin();
     let work_execution = await this.databaseService.getLastWorkExecution();
-    console.log(login, "login");
-    console.log(work_execution, "work_execution");
+    // console.log(login, "login");
+    // console.log(work_execution, "work_execution");
     if(work_execution || login){
       return true;
     }
@@ -64,7 +64,7 @@ export class MainPermissionsService {
 
   async canActivate() {
     const main = await this.isValid()
-    console.log(main, "canActivateMAIN");
+    // console.log(main, "canActivateMAIN");
     return main;
   }
 
@@ -136,7 +136,7 @@ export class ConfigService {
 
   async canActivate() {
     const isValidResult = await this.isValid();
-    console.log(isValidResult, "EL GUARDIA PASA EL LOGIN");
+    // console.log(isValidResult, "EL GUARDIA PASA EL LOGIN");
     return isValidResult;
   }
 
@@ -145,7 +145,7 @@ export class ConfigService {
     await this.databaseService.openConnection();
 
     let config = await this.databaseService.getLocalConfig();
-    console.log(config, "auth.guard");
+    // console.log(config, "auth.guard");
     if(!config){
       //Redirecto to config page if not exists configuration parameters.
       this._router.navigate(['/','config']);
