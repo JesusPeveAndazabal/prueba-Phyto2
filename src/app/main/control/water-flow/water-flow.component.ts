@@ -36,7 +36,7 @@ export class WaterFlowComponent  implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     if(this.wExecution && changes['wExecution']){
       let wConfig : WorkExecutionConfiguration = JSON.parse(this.wExecution.configuration);
-      this.teoric_water_flow = wConfig.water_flow;
+      this.teoric_water_flow = +wConfig.water_flow.toFixed(1);
       //this.drawDonutChart("#teoric-water-flow",wConfig.water_flow,".35em");
     }
     else if(changes['realWaterflow']){

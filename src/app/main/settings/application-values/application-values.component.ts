@@ -268,7 +268,7 @@ export class ApplicationValuesComponent  implements OnInit {
     else
       this.total = 0;
 
-    this.totalLabel = `${this.total} L/min`;
+    this.totalLabel = `${this.total.toFixed(1)} L/min`;
   }
 
   changeUnit($event : any){
